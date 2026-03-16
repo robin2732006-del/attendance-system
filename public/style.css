@@ -1,0 +1,486 @@
+/* =================================
+GENERAL
+================================= */
+
+body{
+margin:0;
+font-family:Arial, Helvetica, sans-serif;
+background:#f4f6f9;
+}
+
+
+/* =================================
+LOGIN PAGE
+================================= */
+
+body.login-page{
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+background:linear-gradient(135deg,#1e3c72,#2a5298);
+}
+
+.login-container{
+width:300px;
+padding:35px;
+background:rgba(255,255,255,0.95);
+border-radius:12px;
+box-shadow:0 10px 30px rgba(0,0,0,0.3);
+text-align:center;
+}
+
+.login-logo{
+width:170px;
+margin-bottom:20px;
+}
+
+.login-container h2{
+margin-bottom:20px;
+color:#1e3c72;
+}
+
+.login-container input{
+width:85%;
+padding:10px;
+margin:10px 0;
+border:1px solid #ccc;
+border-radius:6px;
+}
+
+.login-container button{
+width:85%;
+padding:10px;
+background:#2a5298;
+color:white;
+border:none;
+border-radius:6px;
+cursor:pointer;
+transition:0.3s;
+}
+
+.login-container button:hover{
+background:#1e3c72;
+transform:scale(1.05);
+}
+
+#error{
+color:red;
+margin-top:10px;
+}
+
+
+/* =================================
+NAVBAR
+================================= */
+
+.navbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:15px 30px;
+background:linear-gradient(90deg,#1e3c72,#2a5298);
+color:white;
+box-shadow:0 3px 10px rgba(0,0,0,0.2);
+}
+
+.nav-left{
+font-size:20px;
+font-weight:bold;
+}
+
+.nav-right{
+display:flex;
+gap:10px;
+align-items:center;
+}
+
+
+/* =================================
+NAVBAR BUTTONS
+================================= */
+
+.department-btn,
+.report-btn{
+background:#dc3545;
+color:white;
+padding:8px 16px;
+border:none;
+border-radius:6px;
+text-decoration:none;
+cursor:pointer;
+transition:0.3s;
+}
+
+.department-btn:hover,
+.report-btn:hover{
+background:#b02a37;
+transform:translateY(-2px);
+box-shadow:0 4px 10px rgba(0,0,0,0.2);
+}
+
+.logout-btn{
+background:red;
+color:white;
+padding:8px 16px;
+border:none;
+border-radius:6px;
+cursor:pointer;
+transition:0.3s;
+}
+
+.logout-btn:hover{
+background:darkred;
+transform:translateY(-2px);
+box-shadow:0 4px 10px rgba(0,0,0,0.2);
+}
+
+
+/* =================================
+MAIN CONTAINER
+================================= */
+
+.main-container{
+padding:30px;
+display:flex;
+flex-direction:column;
+gap:30px;
+animation:fadeIn 0.6s ease-in-out;
+}
+
+
+/* =================================
+TOP PANELS
+================================= */
+
+.top-panels{
+display:flex;
+justify-content:center;
+gap:40px;
+flex-wrap:wrap;
+}
+
+
+/* =================================
+ADD STUDENT FORM
+================================= */
+
+.form-box{
+background:white;
+padding:25px;
+border-radius:14px;
+width:320px;
+box-shadow:0 4px 15px rgba(0,0,0,0.1);
+text-align:center;
+}
+
+.form-box input,
+.form-box select{
+width:90%;
+padding:10px;
+margin:10px 0;
+border:1px solid #ddd;
+border-radius:6px;
+}
+
+.form-box button{
+width:90%;
+padding:10px;
+background:#28a745;
+color:white;
+border:none;
+border-radius:6px;
+cursor:pointer;
+transition:0.3s;
+}
+
+.form-box button:hover{
+background:#218838;
+transform:scale(1.05);
+box-shadow:0 4px 10px rgba(0,0,0,0.2);
+}
+
+
+/* =================================
+CHART BOX
+================================= */
+
+.chart-box{
+background:white;
+padding:20px;
+border-radius:14px;
+width:320px;
+box-shadow:0 4px 15px rgba(0,0,0,0.1);
+text-align:center;
+}
+
+.chart-box canvas{
+width:100%!important;
+height:180px!important;
+}
+
+
+/* =================================
+DASHBOARD CARDS
+================================= */
+
+.dashboard{
+display:flex;
+justify-content:center;
+gap:30px;
+flex-wrap:wrap;
+}
+
+.card{
+background:white;
+width:180px;
+padding:22px;
+border-radius:14px;
+text-align:center;
+box-shadow:0 4px 15px rgba(0,0,0,0.1);
+transition:0.3s;
+}
+
+.card:hover{
+transform:translateY(-8px);
+box-shadow:0 8px 20px rgba(0,0,0,0.15);
+}
+
+.card h3{
+margin:0;
+font-size:17px;
+}
+
+.card p{
+font-size:26px;
+font-weight:bold;
+margin-top:10px;
+color:#2a5298;
+}
+
+
+/* =================================
+SEARCH BOX
+================================= */
+
+.search-box{
+text-align:center;
+margin:20px;
+}
+
+.search-box input{
+padding:10px;
+width:260px;
+border:1px solid #ccc;
+border-radius:6px;
+}
+
+
+/* =================================
+DEPARTMENT FILTER
+================================= */
+
+#departmentFilter{
+padding:8px 12px;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+#departmentFilter:hover{
+border-color:#2a5298;
+}
+
+
+/* =================================
+TABLE
+================================= */
+
+table{
+width:90%;
+margin:auto;
+background:white;
+border-collapse:collapse;
+border-radius:12px;
+overflow:hidden;
+box-shadow:0 4px 15px rgba(0,0,0,0.1);
+}
+
+th{
+background:#2a5298;
+color:white;
+padding:13px;
+}
+
+td{
+padding:10px;
+text-align:center;
+border-bottom:1px solid #eee;
+}
+
+tr:hover{
+background:#eef3ff;
+transition:0.3s;
+}
+
+
+/* =================================
+ACTION BUTTONS
+================================= */
+
+.present-btn{
+background:#28a745;
+color:white;
+border:none;
+padding:6px 12px;
+border-radius:6px;
+cursor:pointer;
+margin-right:5px;
+transition:0.3s;
+}
+
+.present-btn:hover{
+background:#218838;
+transform:scale(1.1);
+}
+
+.absent-btn{
+background:#e74c3c;
+color:white;
+border:none;
+padding:6px 12px;
+border-radius:6px;
+cursor:pointer;
+transition:0.3s;
+}
+
+.absent-btn:hover{
+background:#c0392b;
+transform:scale(1.1);
+}
+
+.delete-btn{
+background:#dc3545;
+color:white;
+border:none;
+padding:6px 12px;
+border-radius:6px;
+cursor:pointer;
+transition:0.3s;
+}
+
+.delete-btn:hover{
+background:#c82333;
+transform:scale(1.1);
+}
+
+button:active{
+transform:scale(0.95);
+}
+
+
+/* =================================
+INPUT EFFECT
+================================= */
+
+input:focus,
+select:focus{
+outline:none;
+border:2px solid #2a5298;
+box-shadow:0 0 5px rgba(42,82,152,0.5);
+}
+
+
+/* =================================
+SCROLLBAR
+================================= */
+
+::-webkit-scrollbar{
+width:8px;
+}
+
+::-webkit-scrollbar-thumb{
+background:#2a5298;
+border-radius:10px;
+}
+
+::-webkit-scrollbar-track{
+background:#eee;
+}
+
+
+/* =================================
+ANIMATION
+================================= */
+
+@keyframes fadeIn{
+from{
+opacity:0;
+transform:translateY(20px);
+}
+to{
+opacity:1;
+transform:translateY(0);
+}
+}
+
+
+/* =================================
+RESPONSIVE DESIGN
+================================= */
+
+@media (max-width:768px){
+
+.navbar{
+flex-direction:column;
+align-items:center;
+text-align:center;
+gap:10px;
+padding:15px;
+}
+
+.nav-right{
+justify-content:center;
+flex-wrap:wrap;
+}
+
+.main-container{
+width:95%;
+margin:auto;
+padding:10px;
+}
+
+.top-panels{
+flex-direction:column;
+align-items:center;
+gap:20px;
+}
+
+.form-box,
+.chart-box{
+width:100%;
+max-width:350px;
+}
+
+.dashboard{
+flex-direction:column;
+align-items:center;
+gap:20px;
+}
+
+.card{
+width:90%;
+max-width:250px;
+}
+
+table{
+width:100%;
+font-size:13px;
+display:block;
+overflow-x:auto;
+}
+
+.search-box input{
+width:90%;
+}
+
+}

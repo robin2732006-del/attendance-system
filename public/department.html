@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Department Attendance</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+
+<div class="navbar">
+
+<div class="nav-left">
+Department Attendance
+</div>
+
+<div class="nav-right">
+
+<a href="report.html" class="report-btn">
+Report
+</a>
+
+<button class="logout-btn" onclick="logout()">Logout</button>
+
+</div>
+
+</div>
+
+
+<!-- MAIN CONTENT -->
+
+<div class="main-container">
+
+<h2 style="text-align:center;">Department Attendance List</h2>
+
+
+<!-- DEPARTMENT FILTER -->
+
+<div style="margin:20px 0;text-align:center;">
+
+<label>Select Department:</label>
+
+<select id="departmentFilter" onchange="renderTable()">
+
+<option value="All">All Departments</option>
+
+<option value="Computer Science">Computer Science</option>
+<option value="Information Technology">Information Technology</option>
+<option value="Data Science">Data Science</option>
+<option value="Artificial Intelligence">Artificial Intelligence</option>
+<option value="Mathematics">Mathematics</option>
+<option value="Physics">Physics</option>
+<option value="Chemistry">Chemistry</option>
+<option value="Commerce">Commerce</option>
+<option value="Accounting and Finance">Accounting and Finance</option>
+<option value="English Literature">English Literature</option>
+<option value="Tamil Literature">Tamil Literature</option>
+<option value="Economics">Economics</option>
+<option value="History">History</option>
+<option value="Psychology">Psychology</option>
+<option value="Sociology">Sociology</option>
+<option value="Visual Communication">Visual Communication</option>
+
+</select>
+
+</div>
+
+
+<table>
+
+<thead>
+<tr>
+<th>Name</th>
+<th>Roll</th>
+<th>Department</th>
+<th>Status</th>
+<th>Mark Attendance</th>
+</tr>
+</thead>
+
+<tbody id="deptTableBody"></tbody>
+
+</table>
+
+</div>
+
+
+<script>
+
+const BASE_URL = "http://localhost:3000";
+
+let students = [];
+
+
+/* LOAD STUDENTS */
+
+async function loadStudents(){
+
+try{
+
+const res = await fetch(BASE_URL + "/students");
+students = await res.json();
+
+renderTable();
+
+}catch(err){
+
+console.error(err);
+
+}
+
+}
+
+
+/* RENDER TABLE */
+
+function renderTable(){
+
+let tbody = document.getElementById("deptTableBody");
+tbody.innerHTML = "";
+
+let selectedDept = document.getElementById("departmentFilter").value;
+
+let filteredStudents = students;
+
+if(selectedDept !== "All"){
+filteredStudents = students.filter(s => s.department === selectedDept);
+}
+
+filteredStudents.forEach(s=>{
+
+let status = s.status ? s.status : "-";
+
+let row = `
+<tr>
+
+<td>${s.name}</td>
+<td>${s.rollNo}</td>
+<td>${s.department}</td>
+<td>${status}</td>
+
+<td>
+
+<button onclick="markAttendance('${s._id}','Present')" class="present-btn">
+Present
+</button>
+
+<button onclick="markAttendance('${s._id}','Absent')" class="absent-btn">
+Absent
+</button>
+
+</td>
+
+</tr>
+`;
+
+tbody.innerHTML += row;
+
+});
+
+}
+
+
+/* MARK ATTENDANCE */
+
+async function markAttendance(studentId,status){
+
+try{
+
+const res = await fetch(BASE_URL + "/mark-attendance",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+studentId,
+status
+})
+
+});
+
+const data = await res.json();
+
+alert(data.message);
+
+loadStudents();
+
+}catch(err){
+
+console.error(err);
+
+}
+
+}
+
+
+/* LOGOUT */
+
+function logout(){
+
+localStorage.removeItem("loggedIn");
+window.location.href = "login.html";
+
+}
+
+
+/* PAGE LOAD */
+
+document.addEventListener("DOMContentLoaded",()=>{
+
+if(localStorage.getItem("loggedIn") !== "true"){
+
+window.location.href="login.html";
+return;
+
+}
+
+loadStudents();
+
+});
+
+</script>
+
+</body>
+</html>

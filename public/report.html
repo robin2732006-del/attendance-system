@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Attendance Report</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+
+<div class="navbar">
+
+<div class="nav-left">
+Attendance Report
+</div>
+
+<div class="nav-right">
+
+<button class="report-btn" onclick="downloadReport()">
+Download Report
+</button>
+
+<button class="logout-btn" onclick="logout()">
+Logout
+</button>
+
+</div>
+
+</div>
+
+
+<!-- MAIN CONTENT -->
+
+<div class="main-container">
+
+<h2 style="text-align:center;">Attendance Report</h2>
+
+<table>
+
+<thead>
+
+<tr>
+<th>Name</th>
+<th>Roll No</th>
+<th>Department</th>
+<th>Status</th>
+<th>Date</th>
+<th>Delete</th>
+</tr>
+
+</thead>
+
+<tbody id="reportTable"></tbody>
+
+</table>
+
+</div>
+
+
+<script>
+
+const BASE_URL = "http://localhost:3000";
+
+
+/* ==========================
+LOAD REPORT
+========================== */
+
+async function loadReport(){
+
+try{
+
+const res = await fetch(BASE_URL + "/attendance-report");
+const records = await res.json();
+
+const table = document.getElementById("reportTable");
+
+table.innerHTML = "";
+
+if(records.length === 0){
+
+table.innerHTML = "<tr><td colspan='6'>No records found</td></tr>";
+return;
+
+}
+
+records.forEach(r => {
+
+let tr = document.createElement("tr");
+
+tr.innerHTML = `
+<td>${r.name}</td>
+<td>${r.rollNo}</td>
+<td>${r.department}</td>
+<td>${r.status}</td>
+<td>${new Date(r.date).toLocaleDateString()}</td>
+
+<td>
+<button class="delete-btn" onclick="deleteRecord('${r.id}')">
+Delete
+</button>
+</td>
+`;
+
+table.appendChild(tr);
+
+});
+
+}catch(err){
+
+console.error(err);
+alert("Error loading report");
+
+}
+
+}
+
+
+/* ==========================
+DELETE ATTENDANCE RECORD
+========================== */
+
+async function deleteRecord(id){
+
+if(!confirm("Delete this attendance record?")) return;
+
+try{
+
+const res = await fetch(BASE_URL + "/delete-attendance/" + id,{
+method:"DELETE"
+});
+
+const data = await res.json();
+
+alert(data.message || "Record deleted");
+
+loadReport();
+
+}catch(err){
+
+console.error(err);
+alert("Delete failed");
+
+}
+
+}
+
+
+/* ==========================
+DOWNLOAD REPORT
+========================== */
+
+function downloadReport(){
+
+window.open(BASE_URL + "/download-report","_blank");
+
+}
+
+
+/* ==========================
+LOGOUT
+========================== */
+
+function logout(){
+
+localStorage.removeItem("loggedIn");
+window.location.href = "login.html";
+
+}
+
+
+/* ==========================
+PAGE LOAD
+========================== */
+
+document.addEventListener("DOMContentLoaded",()=>{
+
+if(localStorage.getItem("loggedIn") !== "true"){
+window.location.href="login.html";
+return;
+}
+
+loadReport();
+
+});
+
+</script>
+
+</body>
+</html>

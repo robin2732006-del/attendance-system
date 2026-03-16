@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Attendance Management System</title>
+
+<link rel="stylesheet" href="style.css">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+<body>
+
+<header>
+
+<div class="navbar">
+
+<div class="nav-left">
+Attendance Dashboard
+</div>
+
+<div class="nav-right">
+
+<a href="department.html" class="department-btn">
+Department Attendance
+</a>
+
+<button class="logout-btn" onclick="logout()">Logout</button>
+
+</div>
+
+</div>
+
+</header>
+
+
+<div class="main-container">
+
+<div class="top-panels">
+
+<div class="form-box">
+
+<h3>Add Student</h3>
+
+<input type="text" id="name" placeholder="Enter Name">
+<input type="text" id="roll" placeholder="Enter Roll No">
+
+<!-- SEARCHABLE DEPARTMENT -->
+<input type="text" id="department" list="departmentList" placeholder="Search Department">
+
+<datalist id="departmentList">
+
+<option value="Computer Science">
+<option value="Information Technology">
+<option value="Data Science">
+<option value="Artificial Intelligence">
+<option value="Mathematics">
+<option value="Physics">
+<option value="Chemistry">
+<option value="Statistics">
+<option value="Biotechnology">
+<option value="Microbiology">
+<option value="Biochemistry">
+<option value="Environmental Science">
+
+<option value="Commerce">
+<option value="Accounting and Finance">
+<option value="Banking and Insurance">
+<option value="Business Administration (BBA)">
+<option value="Business Economics">
+
+<option value="English Literature">
+<option value="Tamil Literature">
+<option value="History">
+<option value="Political Science">
+<option value="Sociology">
+<option value="Psychology">
+<option value="Economics">
+<option value="Public Administration">
+
+<option value="Visual Communication">
+<option value="Social Work">
+<option value="Library Science">
+<option value="Physical Education">
+<option value="Hotel Management">
+
+</datalist>
+
+<button onclick="addStudent()">Add Student</button>
+
+</div>
+
+<div class="chart-box">
+
+<h3>Attendance Graph</h3>
+<canvas id="attendanceChart"></canvas>
+
+</div>
+
+</div>
+
+
+<div class="dashboard">
+
+<div class="card">
+<h3>Total Students</h3>
+<p id="totalStudents">0</p>
+</div>
+
+<div class="card">
+<h3>Present Today</h3>
+<p id="presentCount">0</p>
+</div>
+
+<div class="card">
+<h3>Attendance %</h3>
+<p id="attendancePercent">0%</p>
+</div>
+
+</div>
+
+
+<table>
+
+<thead>
+<tr>
+<th>Name</th>
+<th>Roll</th>
+<th>Department</th>
+<th>Status</th>
+<th>Delete</th>
+</tr>
+</thead>
+
+<tbody id="studentTableBody"></tbody>
+
+</table>
+
+</div>
+
+
+<script>
+
+const BASE_URL = "http://localhost:3000";
+
+let students = [];
+let chart = null;
+
+
+// LOAD STUDENTS
+async function loadStudents(){
+
+try{
+
+const res = await fetch(BASE_URL + "/students");
+students = await res.json();
+
+renderTable();
+updateStats();
+loadChart();
+
+}catch(error){
+
+console.error("Error loading students:", error);
+
+}
+
+}
+
+
+// ADD STUDENT
+async function addStudent(){
+
+let name = document.getElementById("name").value.trim();
+let rollNo = document.getElementById("roll").value.trim();
+let department = document.getElementById("department").value.trim();
+
+if(!name || !rollNo || !department){
+
+alert("Please fill all fields");
+return;
+
+}
+
+try{
+
+await fetch(BASE_URL + "/add-student",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({name,rollNo,department})
+
+});
+
+document.getElementById("name").value="";
+document.getElementById("roll").value="";
+document.getElementById("department").value="";
+
+await loadStudents();
+
+}catch(err){
+
+console.error("Add student error:",err);
+
+}
+
+}
+
+
+// RENDER TABLE
+function renderTable(){
+
+let tbody = document.getElementById("studentTableBody");
+tbody.innerHTML = "";
+
+students.forEach(s=>{
+
+let status = s.status ? s.status : "-";
+
+let row = `
+<tr>
+<td>${s.name}</td>
+<td>${s.rollNo}</td>
+<td>${s.department}</td>
+<td>${status}</td>
+
+<td>
+<button onclick="deleteStudent('${s._id}')" style="background:red;color:white;border:none;padding:6px 10px;border-radius:5px;">
+Delete
+</button>
+</td>
+
+</tr>
+`;
+
+tbody.innerHTML += row;
+
+});
+
+}
+
+
+// DELETE STUDENT
+async function deleteStudent(studentId){
+
+if(!confirm("Delete this student?")) return;
+
+try{
+
+await fetch(BASE_URL + "/delete-student/" + studentId,{
+method:"DELETE"
+});
+
+alert("Student deleted");
+
+await loadStudents();
+
+}catch(err){
+
+console.error("Delete error:",err);
+
+}
+
+}
+
+
+// UPDATE DASHBOARD
+function updateStats(){
+
+document.getElementById("totalStudents").innerText = students.length;
+
+let present = students.filter(s => s.status === "Present").length;
+
+document.getElementById("presentCount").innerText = present;
+
+let percent = students.length
+? Math.round((present / students.length) * 100)
+: 0;
+
+document.getElementById("attendancePercent").innerText = percent + "%";
+
+}
+
+
+// LOAD GRAPH
+function loadChart(){
+
+let present = students.filter(s=>s.status==="Present").length;
+let absent = students.filter(s=>s.status==="Absent").length;
+
+let ctx = document.getElementById("attendanceChart").getContext("2d");
+
+if(chart) chart.destroy();
+
+chart = new Chart(ctx,{
+type:"bar",
+data:{
+labels:["Present","Absent"],
+datasets:[{
+data:[present,absent],
+backgroundColor:["#22c55e","#ef4444"]
+}]
+},
+options:{
+plugins:{legend:{display:false}},
+scales:{y:{beginAtZero:true}}
+}
+});
+
+}
+
+
+// LOGOUT
+function logout(){
+
+localStorage.removeItem("loggedIn");
+window.location.href = "login.html";
+
+}
+
+
+// PAGE LOAD
+document.addEventListener("DOMContentLoaded",()=>{
+
+if(localStorage.getItem("loggedIn") !== "true"){
+window.location.href="login.html";
+return;
+}
+
+loadStudents();
+
+});
+
+</script>
+
+</body>
+</html>

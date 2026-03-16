@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Add Student</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <h1>👨‍🎓 Add New Student</h1>
+</header>
+
+<div class="form-box">
+
+  <input type="text" id="name" placeholder="Enter Student Name"><br>
+
+  <input type="text" id="rollNo" placeholder="Enter Roll Number"><br>
+
+  <select id="department">
+    <option value="">Select Department</option>
+    <option value="CSE">CSE</option>
+    <option value="IT">IT</option>
+    <option value="ECE">ECE</option>
+    <option value="EEE">EEE</option>
+  </select><br>
+
+  <button onclick="addStudent()">Add Student</button>
+
+</div>
+
+<a href="index.html" class="button-link">⬅ Back to Dashboard</a>
+
+<script>
+async function addStudent() {
+
+  const name = document.getElementById("name").value;
+  const rollNo = document.getElementById("rollNo").value;
+  const department = document.getElementById("department").value;
+
+  if (!name || !rollNo || !department) {
+    alert("Please fill all fields!");
+    return;
+  }
+
+  const response = await fetch("/add-student", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      name: name,
+      rollNo: rollNo,
+      department: department
+    })
+  });
+
+  const data = await response.json();
+  alert(data.message);
+
+  document.getElementById("name").value = "";
+  document.getElementById("rollNo").value = "";
+  document.getElementById("department").value = "";
+}
+</script>
+
+</body>
+</html>
