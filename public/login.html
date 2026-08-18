@@ -1,50 +1,121 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Teacher Login</title>
 <link rel="stylesheet" href="style.css">
 </head>
-
 <body class="login-page">
 
-<div class="login-container">
+  <div class="login-wrapper">
+    
+    <!-- Left panel: Diagonal blue abstract streaks -->
+    <div class="login-left-panel">
+      <!-- Decorative diagonal glowing streaks -->
+      <div class="streak streak-1"></div>
+      <div class="streak streak-2"></div>
+      <div class="streak streak-3"></div>
+      
+      <div class="login-logo-area">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 2px 6px rgba(255, 255, 255, 0.15));">
+          <rect width="24" height="24" rx="6" fill="url(#logo-grad)"/>
+          <path d="M7 11.5L10.5 15L17 8.5" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M8 3V5M16 3V5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          <defs>
+            <linearGradient id="logo-grad" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#ffffff"/>
+              <stop offset="1" stop-color="#93c5fd"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <span style="font-weight: 700; font-size: 16px; letter-spacing: 1px; color: #ffffff;">Attendance</span>
+      </div>
+      
+      <div class="login-welcome-text">
+        <h1>Hello, welcome!</h1>
+        <p>Manage your students' attendance records and view reports in one centralized system.</p>
+        <button class="view-more-btn" onclick="alert('Attendance Management System version 1.0.0. All systems online.')">View more</button>
+      </div>
+      
+      <div class="login-footer-text">
+        <span>Attendance System v1.0.0</span>
+      </div>
+    </div>
+    
+    <!-- Right panel: Form inputs -->
+    <div class="login-right-panel">
+      <div class="login-form-area">
+        
+        <div class="input-group">
+          <label for="username">Username</label>
+          <div class="input-wrapper">
+            <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+            <input type="text" id="username" placeholder="Enter Username">
+          </div>
+        </div>
+        
+        <div class="input-group">
+          <label for="password">Password</label>
+          <div class="input-wrapper">
+            <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            <input type="password" id="password" placeholder="Enter Password">
+          </div>
+        </div>
+        
+        <div class="form-options">
+          <label class="remember-me">
+            <input type="checkbox"> Remember me
+          </label>
+          <a href="#" class="forgot-pass" onclick="alert('Please contact the IT administrator to reset your password.')">Forgot password?</a>
+        </div>
+        
+        <button class="login-action-btn" onclick="login()">Login</button>
+        <p id="error"></p>
+        
+      </div>
+    </div>
+    
+  </div>
 
-<img src="/ChatGPT Image Mar 7, 2026, 01_29_59 PM.png" class="login-logo" alt="Attendance Logo">
+  <script>
+    const BASE_URL = window.location.protocol === "file:" ? "http://localhost:3000" : "";
 
-<h2>Teacher Attendance Login</h2>
+    async function login() {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value;
+      const errorMsg = document.getElementById("error");
 
-<input type="text" id="username" placeholder="Enter Username">
+      if (!username || !password) {
+        errorMsg.innerText = "Please fill in all fields";
+        return;
+      }
 
-<input type="password" id="password" placeholder="Enter Password">
-
-<button onclick="login()">Login</button>
-
-<p id="error"></p>
-
-</div>
-
-<script>
-
-function login(){
-
-const username = document.getElementById("username").value;
-const password = document.getElementById("password").value;
-
-if(username === "admin" && password === "1234"){
-
-localStorage.setItem("loggedIn","true");
-window.location.href="index.html";
-
-}else{
-
-document.getElementById("error").innerText="Invalid Username or Password";
-
-}
-
-}
-
-</script>
-
+      try {
+        const res = await fetch(BASE_URL + "/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+        
+        if (res.ok && data.success) {
+          localStorage.setItem("loggedIn", "true");
+          window.location.href = "index.html";
+        } else {
+          errorMsg.innerText = data.message || "Invalid Username or Password";
+        }
+      } catch (err) {
+        console.error("Login error:", err);
+        errorMsg.innerText = "Failed to connect to server";
+      }
+    }
+  </script>
 </body>
 </html>

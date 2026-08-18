@@ -2,344 +2,294 @@
 <html lang="en">
 
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Attendance Management System</title>
-
 <link rel="stylesheet" href="style.css">
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 </head>
 
 <body>
 
 <header>
-
-<div class="navbar">
-
-<div class="nav-left">
-Attendance Dashboard
-</div>
-
-<div class="nav-right">
-
-<a href="department.html" class="department-btn">
-Department Attendance
-</a>
-
-<button class="logout-btn" onclick="logout()">Logout</button>
-
-</div>
-
-</div>
-
+  <div class="navbar">
+    <div class="nav-left">🏫 Attendance Dashboard</div>
+    <div class="nav-right">
+      <a href="department.html" class="department-btn">🏢 Department Attendance</a>
+      <a href="report.html" class="report-btn">📊 Report</a>
+      <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+    </div>
+  </div>
 </header>
-
 
 <div class="main-container">
 
-<div class="top-panels">
+  <div class="top-panels">
 
-<div class="form-box">
+    <div class="form-box">
+      <h3>Add Student</h3>
+      <input type="text" id="name" placeholder="Enter Name">
+      <input type="text" id="roll" placeholder="Enter Roll No">
+      
+      <select id="department">
+        <option value="">Select Department</option>
+        <option value="Computer Science">Computer Science</option>
+        <option value="Information Technology">Information Technology</option>
+        <option value="Data Science">Data Science</option>
+        <option value="Artificial Intelligence">Artificial Intelligence</option>
+        <option value="Mathematics">Mathematics</option>
+        <option value="Physics">Physics</option>
+        <option value="Chemistry">Chemistry</option>
+        <option value="Statistics">Statistics</option>
+        <option value="Biotechnology">Biotechnology</option>
+        <option value="Microbiology">Microbiology</option>
+        <option value="Biochemistry">Biochemistry</option>
+        <option value="Commerce">Commerce</option>
+        <option value="Accounting and Finance">Accounting and Finance</option>
+        <option value="English Literature">English Literature</option>
+        <option value="Tamil Literature">Tamil Literature</option>
+        <option value="History">History</option>
+        <option value="Economics">Economics</option>
+        <option value="Psychology">Psychology</option>
+        <option value="Sociology">Sociology</option>
+        <option value="Visual Communication">Visual Communication</option>
+      </select>
 
-<h3>Add Student</h3>
+      <button onclick="addStudent()">➕ Add Student</button>
+    </div>
 
-<input type="text" id="name" placeholder="Enter Name">
-<input type="text" id="roll" placeholder="Enter Roll No">
+    <div class="chart-box">
+      <h3>Attendance Graph</h3>
+      <div class="chart-container">
+        <canvas id="attendanceChart"></canvas>
+      </div>
+    </div>
 
-<!-- SEARCHABLE DEPARTMENT -->
-<input type="text" id="department" list="departmentList" placeholder="Search Department">
+  </div>
 
-<datalist id="departmentList">
-
-<option value="Computer Science">
-<option value="Information Technology">
-<option value="Data Science">
-<option value="Artificial Intelligence">
-<option value="Mathematics">
-<option value="Physics">
-<option value="Chemistry">
-<option value="Statistics">
-<option value="Biotechnology">
-<option value="Microbiology">
-<option value="Biochemistry">
-<option value="Environmental Science">
-
-<option value="Commerce">
-<option value="Accounting and Finance">
-<option value="Banking and Insurance">
-<option value="Business Administration (BBA)">
-<option value="Business Economics">
-
-<option value="English Literature">
-<option value="Tamil Literature">
-<option value="History">
-<option value="Political Science">
-<option value="Sociology">
-<option value="Psychology">
-<option value="Economics">
-<option value="Public Administration">
-
-<option value="Visual Communication">
-<option value="Social Work">
-<option value="Library Science">
-<option value="Physical Education">
-<option value="Hotel Management">
-
-</datalist>
-
-<button onclick="addStudent()">Add Student</button>
-
-</div>
-
-<div class="chart-box">
-
-<h3>Attendance Graph</h3>
-<canvas id="attendanceChart"></canvas>
-
-</div>
-
-</div>
+  <div class="dashboard">
+    <div class="card total-card">
+      <h3>Total Students</h3>
+      <p id="totalStudents">0</p>
+    </div>
+    <div class="card present-card">
+      <h3>Present Today</h3>
+      <p id="presentCount">0</p>
+    </div>
+    <div class="card percent-card">
+      <h3>Attendance %</h3>
+      <p id="attendancePercent">0%</p>
+    </div>
+  </div>
 
 
-<div class="dashboard">
-
-<div class="card">
-<h3>Total Students</h3>
-<p id="totalStudents">0</p>
-</div>
-
-<div class="card">
-<h3>Present Today</h3>
-<p id="presentCount">0</p>
-</div>
-
-<div class="card">
-<h3>Attendance %</h3>
-<p id="attendancePercent">0%</p>
-</div>
 
 </div>
-
-
-<table>
-
-<thead>
-<tr>
-<th>Name</th>
-<th>Roll</th>
-<th>Department</th>
-<th>Status</th>
-<th>Delete</th>
-</tr>
-</thead>
-
-<tbody id="studentTableBody"></tbody>
-
-</table>
-
-</div>
-
 
 <script>
-
-const BASE_URL = "http://localhost:3000";
-
+const BASE_URL = window.location.protocol === "file:" ? "http://localhost:3000" : "";
 let students = [];
 let chart = null;
 
+// ======================
+// CUSTOM POPUP
+// ======================
+function showMessage(message) {
+  let box = document.getElementById("popupBox");
+  if (!box) {
+    box = document.createElement("div");
+    box.id = "popupBox";
+    box.innerHTML = `
+      <div style="
+        background:white;
+        padding:25px;
+        border-radius:10px;
+        text-align:center;
+        min-width:250px;
+        box-shadow:0 4px 15px rgba(0,0,0,0.2);
+      ">
+        <p id="popupText"></p><br>
+        <button onclick="closePopup()" style="
+          padding:8px 18px;
+          background:#2a5298;
+          color:white;
+          border:none;
+          border-radius:6px;
+          cursor:pointer;
+        ">OK</button>
+      </div>
+    `;
+    box.style.position = "fixed";
+    box.style.top = "0";
+    box.style.left = "0";
+    box.style.width = "100%";
+    box.style.height = "100%";
+    box.style.background = "rgba(0,0,0,0.4)";
+    box.style.display = "flex";
+    box.style.justifyContent = "center";
+    box.style.alignItems = "center";
+    document.body.appendChild(box);
+  }
+  document.getElementById("popupText").innerText = message;
+  box.style.display = "flex";
+}
 
+function closePopup() {
+  const box = document.getElementById("popupBox");
+  if (box) box.style.display = "none";
+}
+
+// ======================
 // LOAD STUDENTS
-async function loadStudents(){
-
-try{
-
-const res = await fetch(BASE_URL + "/students");
-students = await res.json();
-
-renderTable();
-updateStats();
-loadChart();
-
-}catch(error){
-
-console.error("Error loading students:", error);
-
+// ======================
+async function loadStudents() {
+  try {
+    const res = await fetch(BASE_URL + "/students");
+    students = await res.json();
+    updateStats();
+    loadChart();
+  } catch (error) {
+    console.error("Error loading students:", error);
+  }
 }
 
-}
-
-
+// ======================
 // ADD STUDENT
-async function addStudent(){
+// ======================
+async function addStudent() {
+  const name = document.getElementById("name").value.trim();
+  const rollNo = document.getElementById("roll").value.trim();
+  const department = document.getElementById("department").value.trim();
 
-let name = document.getElementById("name").value.trim();
-let rollNo = document.getElementById("roll").value.trim();
-let department = document.getElementById("department").value.trim();
+  if (!name || !rollNo || !department) {
+    showMessage("Please fill all fields");
+    return;
+  }
 
-if(!name || !rollNo || !department){
+  try {
+    const res = await fetch(BASE_URL + "/add-student", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, rollNo, department })
+    });
 
-alert("Please fill all fields");
-return;
+    const data = await res.json();
+    if (!res.ok) {
+      showMessage(data.message || "Failed to add student");
+      return;
+    }
 
-}
+    showMessage("Student added successfully");
+    document.getElementById("name").value = "";
+    document.getElementById("roll").value = "";
+    document.getElementById("department").value = "";
 
-try{
-
-await fetch(BASE_URL + "/add-student",{
-
-method:"POST",
-
-headers:{
-"Content-Type":"application/json"
-},
-
-body:JSON.stringify({name,rollNo,department})
-
-});
-
-document.getElementById("name").value="";
-document.getElementById("roll").value="";
-document.getElementById("department").value="";
-
-await loadStudents();
-
-}catch(err){
-
-console.error("Add student error:",err);
-
-}
-
+    await loadStudents();
+  } catch (err) {
+    console.error("Add student error:", err);
+    showMessage("Failed to connect to server");
+  }
 }
 
 
-// RENDER TABLE
-function renderTable(){
 
-let tbody = document.getElementById("studentTableBody");
-tbody.innerHTML = "";
-
-students.forEach(s=>{
-
-let status = s.status ? s.status : "-";
-
-let row = `
-<tr>
-<td>${s.name}</td>
-<td>${s.rollNo}</td>
-<td>${s.department}</td>
-<td>${status}</td>
-
-<td>
-<button onclick="deleteStudent('${s._id}')" style="background:red;color:white;border:none;padding:6px 10px;border-radius:5px;">
-Delete
-</button>
-</td>
-
-</tr>
-`;
-
-tbody.innerHTML += row;
-
-});
-
-}
-
-
+// ======================
 // DELETE STUDENT
-async function deleteStudent(studentId){
-
-if(!confirm("Delete this student?")) return;
-
-try{
-
-await fetch(BASE_URL + "/delete-student/" + studentId,{
-method:"DELETE"
-});
-
-alert("Student deleted");
-
-await loadStudents();
-
-}catch(err){
-
-console.error("Delete error:",err);
-
+// ======================
+async function deleteStudent(studentId) {
+  if (!confirm("Delete this student?")) return;
+  try {
+    await fetch(BASE_URL + "/delete-student/" + studentId, { method: "DELETE" });
+    showMessage("Student deleted");
+    await loadStudents();
+  } catch (err) {
+    console.error("Delete error:", err);
+  }
 }
 
-}
-
-
+// ======================
 // UPDATE DASHBOARD
-function updateStats(){
-
-document.getElementById("totalStudents").innerText = students.length;
-
-let present = students.filter(s => s.status === "Present").length;
-
-document.getElementById("presentCount").innerText = present;
-
-let percent = students.length
-? Math.round((present / students.length) * 100)
-: 0;
-
-document.getElementById("attendancePercent").innerText = percent + "%";
-
+// ======================
+function updateStats() {
+  document.getElementById("totalStudents").innerText = students.length;
+  const present = students.filter(s => s.status === "Present").length;
+  document.getElementById("presentCount").innerText = present;
+  const percent = students.length ? Math.round((present / students.length) * 100) : 0;
+  document.getElementById("attendancePercent").innerText = percent + "%";
 }
 
-
+// ======================
 // LOAD GRAPH
-function loadChart(){
+// ======================
+function loadChart() {
+  if (typeof Chart === "undefined") {
+    console.warn("Chart.js is not loaded. Graph rendering skipped.");
+    return;
+  }
+  const present = students.filter(s => s.status === "Present").length;
+  const absent = students.filter(s => s.status === "Absent").length;
+  const unmarked = students.filter(s => !s.status).length;
 
-let present = students.filter(s=>s.status==="Present").length;
-let absent = students.filter(s=>s.status==="Absent").length;
+  const ctx = document.getElementById("attendanceChart").getContext("2d");
 
-let ctx = document.getElementById("attendanceChart").getContext("2d");
+  if (chart) chart.destroy();
 
-if(chart) chart.destroy();
+  const dataValues = (present === 0 && absent === 0 && unmarked === 0) ? [0, 0, 1] : [present, absent, unmarked];
+  const bgColors = (present === 0 && absent === 0 && unmarked === 0) 
+    ? ["#cbd5e1", "#cbd5e1", "#cbd5e1"] 
+    : ["#10b981", "#ef4444", "#94a3b8"];
+  const labels = (present === 0 && absent === 0 && unmarked === 0) 
+    ? ["No Records", "", ""] 
+    : ["Present", "Absent", "Unmarked"];
 
-chart = new Chart(ctx,{
-type:"bar",
-data:{
-labels:["Present","Absent"],
-datasets:[{
-data:[present,absent],
-backgroundColor:["#22c55e","#ef4444"]
-}]
-},
-options:{
-plugins:{legend:{display:false}},
-scales:{y:{beginAtZero:true}}
+  chart = new Chart(ctx, {
+    type: "doughnut",
+    data: {
+      labels: labels,
+      datasets: [{
+        data: dataValues,
+        backgroundColor: bgColors,
+        borderWidth: 2,
+        borderColor: "#ffffff"
+      }]
+    },
+    options: {
+      plugins: { 
+        legend: { 
+          display: true,
+          position: "bottom",
+          labels: {
+            color: "#475569",
+            font: { family: "Outfit", size: 12 }
+          }
+        }
+      },
+      cutout: "70%",
+      responsive: true,
+      maintainAspectRatio: false
+    }
+  });
 }
-});
-
-}
 
 
+// ======================
 // LOGOUT
-function logout(){
-
-localStorage.removeItem("loggedIn");
-window.location.href = "login.html";
-
+// ======================
+function logout() {
+  localStorage.removeItem("loggedIn");
+  window.location.href = "login.html";
 }
 
-
+// ======================
 // PAGE LOAD
-document.addEventListener("DOMContentLoaded",()=>{
-
-if(localStorage.getItem("loggedIn") !== "true"){
-window.location.href="login.html";
-return;
-}
-
-loadStudents();
-
+// ======================
+document.addEventListener("DOMContentLoaded", () => {
+  if (localStorage.getItem("loggedIn") !== "true") {
+    window.location.href = "login.html";
+    return;
+  }
+  loadStudents();
 });
-
 </script>
 
 </body>

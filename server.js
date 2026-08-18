@@ -2,9 +2,23 @@ const express = require("express");
 const mongoose = require("mongoose");
 const path = require("path");
 const fs = require("fs");
+const cors = require("cors");
+
+// Load Environment Variables from .env if it exists
+const envPath = path.join(__dirname, ".env");
+if (fs.existsSync(envPath)) {
+  fs.readFileSync(envPath, "utf8").split(/\r?\n/).forEach(line => {
+    const trimmed = line.trim();
+    if (trimmed && !trimmed.startsWith("#")) {
+      const [key, ...val] = trimmed.split("=");
+      if (key) process.env[key.trim()] = val.join("=").trim().replace(/(^["']|["']$)/g, "");
+    }
+  });
+}
 
 const Student = require("./models/Student");
 const Attendance = require("./models/Attendance");
+const User = require("./models/User");
 
 const app = express();
 
@@ -13,26 +27,28 @@ mongoose.set("strictPopulate", false);
 // ======================
 // Middleware
 // ======================
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
+
+// Request logger
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  next();
+});
+
 // ======================
 // MongoDB Connection
 // ======================
-const uri = "mongodb+srv://robin2006:2006@cluster0.oexgujo.mongodb.net/attendance?retryWrites=true&w=majority&appName=Cluster0";
+const MONGO_URI = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/attendance";
 
-async function connectDB() {
-  try {
-    await mongoose.connect(uri);
-    console.log("✅ MongoDB Connected");
-  } catch (err) {
-    console.error("❌ MongoDB Error:", err.message);
-    process.exit(1);
-  }
-}
-
-connectDB();
+mongoose.connect(MONGO_URI)
+  .then(() => console.log("✅ MongoDB Connected (Atlas/Local)"))
+  .catch(err => {
+    console.log("⚠️ MongoDB Server not detected. Falling back to the self-contained, offline-compatible Local JSON File Database.");
+  });
 
 
 // ======================
@@ -91,7 +107,7 @@ app.get("/students", async (req, res) => {
     const result = students.map(student => {
 
       const record = attendance.find(
-        a => a.student.toString() === student._id.toString()
+        a => a.student && a.student.toString() === student._id.toString()
       );
 
       return {
@@ -277,9 +293,29 @@ app.delete("/delete-attendance/:id", async (req, res) => {
 
 
 // ======================
+// USER LOGIN
+// ======================
+app.post("/login", async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    if (!username || !password) {
+      return res.status(400).json({ message: "Username and password required" });
+    }
+    const user = await User.findOne({ username });
+    if (!user || user.password !== password) {
+      return res.status(400).json({ message: "Invalid Username or Password" });
+    }
+    res.json({ message: "Login successful", success: true });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
+// ======================
 // START SERVER
 // ======================
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);

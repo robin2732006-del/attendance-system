@@ -19,16 +19,20 @@
 <div class="navbar">
 
 <div class="nav-left">
-Department Attendance
+🏢 Department Attendance
 </div>
 
 <div class="nav-right">
 
-<a href="report.html" class="report-btn">
-Report
+<a href="index.html" class="dashboard-btn">
+🏫 Dashboard
 </a>
 
-<button class="logout-btn" onclick="logout()">Logout</button>
+<a href="report.html" class="report-btn">
+📊 Report
+</a>
+
+<button class="logout-btn" onclick="logout()">🚪 Logout</button>
 
 </div>
 
@@ -39,16 +43,16 @@ Report
 
 <div class="main-container">
 
-<h2 style="text-align:center;">Department Attendance List</h2>
+<h2 style="text-align: center; margin: 0 0 10px 0; font-weight: 600; letter-spacing: -0.5px; background: linear-gradient(135deg, #fff 0%, var(--text-muted) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Department Attendance List</h2>
 
 
 <!-- DEPARTMENT FILTER -->
 
-<div style="margin:20px 0;text-align:center;">
+<div class="form-box" style="margin: 0 auto; width: 100%; max-width: 400px; box-sizing: border-box;">
 
-<label>Select Department:</label>
+<label style="display: block; margin-bottom: 10px; font-weight: 500; color: var(--text-muted);">Select Department</label>
 
-<select id="departmentFilter" onchange="renderTable()">
+<select id="departmentFilter" onchange="renderTable()" style="width: 100%; margin: 0;">
 
 <option value="All">All Departments</option>
 
@@ -59,6 +63,10 @@ Report
 <option value="Mathematics">Mathematics</option>
 <option value="Physics">Physics</option>
 <option value="Chemistry">Chemistry</option>
+<option value="Statistics">Statistics</option>
+<option value="Biotechnology">Biotechnology</option>
+<option value="Microbiology">Microbiology</option>
+<option value="Biochemistry">Biochemistry</option>
 <option value="Commerce">Commerce</option>
 <option value="Accounting and Finance">Accounting and Finance</option>
 <option value="English Literature">English Literature</option>
@@ -95,7 +103,7 @@ Report
 
 <script>
 
-const BASE_URL = "http://localhost:3000";
+const BASE_URL = window.location.protocol === "file:" ? "http://localhost:3000" : "";
 
 let students = [];
 
