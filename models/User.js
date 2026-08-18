@@ -42,8 +42,13 @@ class UserModel {
         this._id = doc._id.toString();
         return this;
       } catch (err) {
-        console.error("Mongoose User save error, falling back to JSON:", err);
+        console.error("Mongoose User save error:", err);
+        throw err;
       }
+    }
+
+    if (process.env.MONGODB_URI) {
+      throw new Error("Database connection is offline. Unable to save user.");
     }
 
     const users = db.readJSON(USERS_FILE);
@@ -77,8 +82,13 @@ class UserModel {
         }
         return await userMongooseModel.findOne(query);
       } catch (err) {
-        console.error("Mongoose User findOne error, falling back to JSON:", err);
+        console.error("Mongoose User findOne error:", err);
+        throw err;
       }
+    }
+
+    if (process.env.MONGODB_URI) {
+      throw new Error("Database connection is offline. Unable to query user.");
     }
 
     // 2. Seed default user on-demand in local JSON file database

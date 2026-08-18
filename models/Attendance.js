@@ -42,8 +42,13 @@ class AttendanceModel {
           return this;
         }
       } catch (err) {
-        console.error("Mongoose Attendance save error, falling back to JSON:", err);
+        console.error("Mongoose Attendance save error:", err);
+        throw err;
       }
+    }
+
+    if (process.env.MONGODB_URI) {
+      throw new Error("Database connection is offline. Unable to save attendance.");
     }
 
     // JSON fallback
@@ -81,6 +86,10 @@ class AttendanceModel {
         }
       }
       return attendanceMongooseModel.find(dbQuery);
+    }
+
+    if (process.env.MONGODB_URI) {
+      throw new Error("Database connection is offline. Unable to retrieve attendance records.");
     }
 
     // JSON fallback
@@ -143,8 +152,13 @@ class AttendanceModel {
         }
         return await attendanceMongooseModel.findOne(dbQuery);
       } catch (err) {
-        console.error("Mongoose findOne error, falling back to JSON:", err);
+        console.error("Mongoose findOne error:", err);
+        throw err;
       }
+    }
+
+    if (process.env.MONGODB_URI) {
+      throw new Error("Database connection is offline. Unable to query attendance record.");
     }
 
     // JSON fallback
@@ -180,8 +194,13 @@ class AttendanceModel {
           }
         }
       } catch (err) {
-        console.error("Mongoose deleteMany error, falling back to JSON:", err);
+        console.error("Mongoose deleteMany error:", err);
+        throw err;
       }
+    }
+
+    if (process.env.MONGODB_URI) {
+      throw new Error("Database connection is offline. Unable to delete attendance records.");
     }
 
     // JSON fallback
@@ -201,8 +220,13 @@ class AttendanceModel {
           return await attendanceMongooseModel.findByIdAndDelete(id);
         }
       } catch (err) {
-        console.error("Mongoose findByIdAndDelete error, falling back to JSON:", err);
+        console.error("Mongoose findByIdAndDelete error:", err);
+        throw err;
       }
+    }
+
+    if (process.env.MONGODB_URI) {
+      throw new Error("Database connection is offline. Unable to delete attendance record.");
     }
 
     // JSON fallback

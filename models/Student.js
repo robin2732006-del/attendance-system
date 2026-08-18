@@ -56,8 +56,13 @@ class StudentModel {
         }
         return this;
       } catch (err) {
-        console.error("Mongoose Student save error, falling back to JSON:", err);
+        console.error("Mongoose Student save error:", err);
+        throw err;
       }
+    }
+
+    if (process.env.MONGODB_URI) {
+      throw new Error("Database connection is offline. Unable to save student.");
     }
 
     // Local JSON File Database Fallback
@@ -85,6 +90,10 @@ class StudentModel {
       return studentMongooseModel.find();
     }
 
+    if (process.env.MONGODB_URI) {
+      throw new Error("Database connection is offline. Unable to retrieve students.");
+    }
+
     // Fallback: Return a chainable object with sort helper to mimic Mongoose
     const students = db.readJSON(db.STUDENTS_FILE);
     const chain = {
@@ -106,8 +115,13 @@ class StudentModel {
       try {
         return await studentMongooseModel.findOne(query);
       } catch (err) {
-        console.error("Mongoose findOne error, falling back to JSON:", err);
+        console.error("Mongoose findOne error:", err);
+        throw err;
       }
+    }
+
+    if (process.env.MONGODB_URI) {
+      throw new Error("Database connection is offline. Unable to query student.");
     }
 
     const students = db.readJSON(db.STUDENTS_FILE);
@@ -127,8 +141,13 @@ class StudentModel {
           return await studentMongooseModel.findByIdAndDelete(id);
         }
       } catch (err) {
-        console.error("Mongoose findByIdAndDelete error, falling back to JSON:", err);
+        console.error("Mongoose findByIdAndDelete error:", err);
+        throw err;
       }
+    }
+
+    if (process.env.MONGODB_URI) {
+      throw new Error("Database connection is offline. Unable to delete student.");
     }
 
     let students = db.readJSON(db.STUDENTS_FILE);
@@ -146,8 +165,14 @@ class StudentModel {
         return await studentMongooseModel.deleteMany(query || {});
       } catch (err) {
         console.error("Mongoose Student deleteMany error:", err);
+        throw err;
       }
     }
+
+    if (process.env.MONGODB_URI) {
+      throw new Error("Database connection is offline. Unable to delete students.");
+    }
+
     db.writeJSON(db.STUDENTS_FILE, []);
     return { deletedCount: 0 };
   }
