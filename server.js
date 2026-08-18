@@ -45,10 +45,14 @@ app.use((req, res, next) => {
 const MONGO_URI = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/attendance";
 
 mongoose.connect(MONGO_URI)
-  .then(() => console.log("✅ MongoDB Connected (Atlas/Local)"))
+  .then(() => {
+    console.log("✅ MongoDB Connected (Atlas/Local)");
+    startServer();
+  })
   .catch(err => {
     console.error("❌ MongoDB Connection Error:", err);
     console.log("⚠️ MongoDB Server connection failed. Falling back to the self-contained, offline-compatible Local JSON File Database.");
+    startServer();
   });
 
 
@@ -316,8 +320,11 @@ app.post("/login", async (req, res) => {
 // ======================
 // START SERVER
 // ======================
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-});
+function startServer() {
+  if (app.locals.serverStarted) return;
+  app.locals.serverStarted = true;
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, "0.0.0.0", () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+  });
+}

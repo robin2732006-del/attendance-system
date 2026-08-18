@@ -40,6 +40,8 @@ class AttendanceModel {
           await doc.save();
           this._id = doc._id.toString();
           return this;
+        } else {
+          throw new Error("Invalid student ID format for MongoDB reference.");
         }
       } catch (err) {
         console.error("Mongoose Attendance save error:", err);
