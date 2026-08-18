@@ -47,7 +47,8 @@ const MONGO_URI = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/attendan
 mongoose.connect(MONGO_URI)
   .then(() => console.log("✅ MongoDB Connected (Atlas/Local)"))
   .catch(err => {
-    console.log("⚠️ MongoDB Server not detected. Falling back to the self-contained, offline-compatible Local JSON File Database.");
+    console.error("❌ MongoDB Connection Error:", err);
+    console.log("⚠️ MongoDB Server connection failed. Falling back to the self-contained, offline-compatible Local JSON File Database.");
   });
 
 
