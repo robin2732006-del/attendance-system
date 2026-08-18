@@ -107,7 +107,8 @@ body.login-page {
 @media (max-width: 850px) {
   .login-wrapper {
     grid-template-columns: 1fr;
-    width: 400px;
+    width: 90%;
+    max-width: 400px;
     height: auto;
   }
   .login-left-panel {
@@ -832,5 +833,227 @@ button:active {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* =================================
+   RESPONSIVE DESIGN & MEDIA QUERIES
+   ================================= */
+
+/* Responsive Table Wrapper */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: var(--radius-lg);
+  margin-top: 10px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-light);
+}
+
+.table-container table {
+  margin-top: 0;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+/* 1. Large screens (Desktop) - 1441px+ */
+@media (min-width: 1441px) {
+  .main-container {
+    max-width: 1400px;
+  }
+}
+
+/* 2. Laptop (1025px - 1440px) */
+/* (Base styles are already optimized for this range, no overrides needed) */
+
+/* 3. Tablet (768px - 1024px) */
+@media (max-width: 1024px) {
+  .main-container {
+    padding: 24px 20px;
+    gap: 24px;
+  }
+  .navbar {
+    padding: 16px 24px;
+  }
+  .top-panels {
+    gap: 20px;
+  }
+}
+
+/* 4. Large Mobile (481px - 767px) */
+@media (max-width: 767px) {
+  .main-container {
+    padding: 16px;
+    gap: 20px;
+  }
+  
+  /* Responsive Navbar */
+  .navbar {
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    text-align: center;
+  }
+  .nav-right {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .department-btn,
+  .report-btn,
+  .dashboard-btn,
+  .logout-btn {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+
+  /* Responsive Top Panels */
+  .top-panels {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  /* Responsive Cards Grid */
+  .dashboard {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+  }
+  .card {
+    padding: 16px;
+  }
+  .card p {
+    font-size: 28px;
+  }
+
+  /* Responsive Tables */
+  th, td {
+    padding: 12px 10px;
+    font-size: 13px;
+  }
+
+  /* Responsive Login Page */
+  body.login-page {
+    height: auto;
+    min-height: 100vh;
+    padding: 24px 16px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .login-wrapper {
+    grid-template-columns: 1fr;
+    width: 100%;
+    max-width: 440px;
+    height: auto;
+    border-radius: var(--radius-lg);
+  }
+  .login-left-panel {
+    display: none !important;
+  }
+  .login-right-panel {
+    padding: 36px 24px;
+  }
+}
+
+/* 5. Mobile (320px - 480px) */
+@media (max-width: 480px) {
+  .main-container {
+    padding: 12px 8px;
+    gap: 16px;
+  }
+
+  .navbar {
+    padding: 12px;
+    gap: 8px;
+  }
+  .nav-left {
+    font-size: 18px;
+  }
+  .nav-right {
+    gap: 6px;
+  }
+  .department-btn,
+  .report-btn,
+  .dashboard-btn,
+  .logout-btn {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  .form-box,
+  .chart-box {
+    padding: 16px;
+  }
+  .form-box h3,
+  .chart-box h3 {
+    font-size: 16px;
+    margin-bottom: 16px;
+  }
+  .chart-container {
+    height: 200px;
+  }
+
+  .form-box input,
+  .form-box select,
+  .search-box input {
+    padding: 10px 12px;
+    font-size: 14px; /* Prevents auto-zoom on iOS */
+    margin-bottom: 12px;
+  }
+
+  .dashboard {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .card {
+    padding: 14px;
+  }
+  .card p {
+    font-size: 24px;
+    margin-top: 8px;
+  }
+
+  th, td {
+    padding: 10px 8px;
+    font-size: 12px;
+  }
+
+  .present-btn,
+  .absent-btn,
+  .delete-btn {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+
+  body.login-page {
+    padding: 12px;
+  }
+  .login-right-panel {
+    padding: 24px 16px;
+  }
+  .login-form-area input[type="text"],
+  .login-form-area input[type="password"] {
+    padding: 12px 14px 12px 38px;
+    font-size: 14px;
+  }
+  .login-form-area label {
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+  .login-action-btn,
+  .signup-action-btn {
+    padding: 12px;
+    font-size: 13px;
+  }
+  .form-options {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 20px;
   }
 }
