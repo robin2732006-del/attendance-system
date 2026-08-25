@@ -20,7 +20,7 @@ function isDbConnected() {
 const USERS_FILE = require('path').join(__dirname, '../data/users.json');
 if (!require('fs').existsSync(USERS_FILE)) {
   require('fs').writeFileSync(USERS_FILE, JSON.stringify([
-    { _id: "u_admin", username: "admin", password: "1234" }
+    { _id: "u_admin", username: "Admin", password: "12345" }
   ], null, 2));
 }
 
@@ -71,11 +71,11 @@ class UserModel {
     // 1. Seed default user on-demand if MongoDB is connected
     if (isDbConnected() && userMongooseModel) {
       try {
-        const adminExists = await userMongooseModel.findOne({ username: 'admin' });
+        const adminExists = await userMongooseModel.findOne({ username: 'Admin' });
         if (!adminExists) {
           const admin = new userMongooseModel({
-            username: 'admin',
-            password: '1234'
+            username: 'Admin',
+            password: '12345'
           });
           await admin.save();
           console.log("👤 Default admin user seeded in MongoDB (on demand).");
@@ -93,9 +93,9 @@ class UserModel {
 
     // 2. Seed default user on-demand in local JSON file database
     const users = db.readJSON(USERS_FILE);
-    const adminExists = users.some(u => u.username === 'admin');
+    const adminExists = users.some(u => u.username === 'Admin');
     if (!adminExists) {
-      users.push({ _id: "u_admin", username: "admin", password: "1234" });
+      users.push({ _id: "u_admin", username: "Admin", password: "12345" });
       db.writeJSON(USERS_FILE, users);
     }
 
@@ -110,11 +110,11 @@ class UserModel {
 async function seedDefaultUser() {
   try {
     if (isDbConnected() && userMongooseModel) {
-      const existing = await userMongooseModel.findOne({ username: 'admin' });
+      const existing = await userMongooseModel.findOne({ username: 'Admin' });
       if (!existing) {
         const admin = new userMongooseModel({
-          username: 'admin',
-          password: '1234'
+          username: 'Admin',
+          password: '12345'
         });
         await admin.save();
         console.log("👤 Default admin user seeded in MongoDB (on startup check).");
