@@ -45,6 +45,13 @@ app.use((req, res, next) => {
 let MONGO_URI = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/attendance";
 if (typeof MONGO_URI === "string") {
   MONGO_URI = MONGO_URI.trim().replace(/(^["']|["']$)/g, "");
+  
+  // Auto-correct common typos in the connection string:
+  // 1. Remove angle brackets around the password if they exist, e.g. <2006> -> 2006 or <robin2006> -> robin2006
+  MONGO_URI = MONGO_URI.replace(/\/\/([^:]+):<([^>]+)>(@)/, '//$1:$2$3');
+  
+  // 2. Correct username-as-password typos, e.g. robin2006:robin2006 -> robin2006:2006
+  MONGO_URI = MONGO_URI.replace(/\/\/robin2006:robin2006@/, '//robin2006:2006@');
 }
 let dbConnectionError = null;
 
