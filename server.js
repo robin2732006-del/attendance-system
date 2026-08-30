@@ -43,6 +43,7 @@ app.use((req, res, next) => {
 // MongoDB Connection
 // ======================
 const MONGO_URI = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/attendance";
+let dbConnectionError = null;
 
 mongoose.connect(MONGO_URI)
   .then(() => {
@@ -51,6 +52,7 @@ mongoose.connect(MONGO_URI)
   })
   .catch(err => {
     console.error("❌ MongoDB Connection Error:", err);
+    dbConnectionError = err.message || err.toString();
     console.log("⚠️ MongoDB Server connection failed. Falling back to the self-contained, offline-compatible Local JSON File Database.");
     startServer();
   });
@@ -323,11 +325,12 @@ app.get("/debug-db", async (req, res) => {
   try {
     const isConnected = mongoose.connection && mongoose.connection.readyState === 1;
     let adminFound = false;
-    let offlineDataExists = false;
 
     try {
-      const admin = await User.findOne({ username: 'Admin' });
-      adminFound = !!admin;
+      if (isConnected) {
+        const admin = await User.findOne({ username: 'Admin' });
+        adminFound = !!admin;
+      }
     } catch (e) {
       console.error(e);
     }
@@ -336,7 +339,8 @@ app.get("/debug-db", async (req, res) => {
       mongodb_uri_exists: !!process.env.MONGODB_URI,
       is_db_connected: isConnected,
       ready_state: mongoose.connection ? mongoose.connection.readyState : "no connection",
-      admin_user_found: adminFound
+      admin_user_found: adminFound,
+      connection_error: dbConnectionError
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
