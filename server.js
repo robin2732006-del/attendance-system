@@ -42,7 +42,10 @@ app.use((req, res, next) => {
 // ======================
 // MongoDB Connection
 // ======================
-const MONGO_URI = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/attendance";
+let MONGO_URI = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/attendance";
+if (typeof MONGO_URI === "string") {
+  MONGO_URI = MONGO_URI.trim().replace(/(^["']|["']$)/g, "");
+}
 let dbConnectionError = null;
 
 mongoose.connect(MONGO_URI)
