@@ -338,14 +338,23 @@ app.get("/debug-db", async (req, res) => {
       console.error(e);
     }
 
-    let maskedUri = "not set";
-    let hasPlaceholder = false;
+    let username = "not set";
+    let isPasswordCorrect = false;
+    let databaseName = "not set";
+
     if (process.env.MONGODB_URI) {
-      // Replace password with asterisks
-      maskedUri = process.env.MONGODB_URI.replace(/(:)([^@]+)(@)/, '$1******$3');
-      hasPlaceholder = process.env.MONGODB_URI.includes("<password>") || 
-                       process.env.MONGODB_URI.includes("<db_password>") ||
-                       process.env.MONGODB_URI.includes("[password]");
+      const cleanedUri = process.env.MONGODB_URI.trim().replace(/(^["']|["']$)/g, "");
+      
+      // Parse username (looks between // and :)
+      const userMatch = cleanedUri.match(/\/\/([^:]+):/);
+      if (userMatch) username = userMatch[1];
+
+      // Check if password matches local working password '2006'
+      isPasswordCorrect = cleanedUri.includes(`:${encodeURIComponent("2006")}@`) || cleanedUri.includes(":2006@");
+
+      // Parse database name (looks between net/ and ?)
+      const dbMatch = cleanedUri.match(/net\/([^?#]+)/);
+      if (dbMatch) databaseName = dbMatch[1];
     }
 
     res.json({
@@ -354,8 +363,9 @@ app.get("/debug-db", async (req, res) => {
       ready_state: mongoose.connection ? mongoose.connection.readyState : "no connection",
       admin_user_found: adminFound,
       connection_error: dbConnectionError,
-      masked_uri: maskedUri,
-      has_literal_password_placeholder: hasPlaceholder
+      parsed_username: username,
+      is_password_exactly_2006: isPasswordCorrect,
+      parsed_database_name: databaseName
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
