@@ -321,56 +321,7 @@ app.post("/login", async (req, res) => {
   }
 });
 
-// ======================
-// DATABASE DEBUG (TEMPORARY)
-// ======================
-app.get("/debug-db", async (req, res) => {
-  try {
-    const isConnected = mongoose.connection && mongoose.connection.readyState === 1;
-    let adminFound = false;
 
-    try {
-      if (isConnected) {
-        const admin = await User.findOne({ username: 'Admin' });
-        adminFound = !!admin;
-      }
-    } catch (e) {
-      console.error(e);
-    }
-
-    let username = "not set";
-    let isPasswordCorrect = false;
-    let databaseName = "not set";
-
-    if (process.env.MONGODB_URI) {
-      const cleanedUri = process.env.MONGODB_URI.trim().replace(/(^["']|["']$)/g, "");
-      
-      // Parse username (looks between // and :)
-      const userMatch = cleanedUri.match(/\/\/([^:]+):/);
-      if (userMatch) username = userMatch[1];
-
-      // Check if password matches local working password '2006'
-      isPasswordCorrect = cleanedUri.includes(`:${encodeURIComponent("2006")}@`) || cleanedUri.includes(":2006@");
-
-      // Parse database name (looks between net/ and ?)
-      const dbMatch = cleanedUri.match(/net\/([^?#]+)/);
-      if (dbMatch) databaseName = dbMatch[1];
-    }
-
-    res.json({
-      mongodb_uri_exists: !!process.env.MONGODB_URI,
-      is_db_connected: isConnected,
-      ready_state: mongoose.connection ? mongoose.connection.readyState : "no connection",
-      admin_user_found: adminFound,
-      connection_error: dbConnectionError,
-      parsed_username: username,
-      is_password_exactly_2006: isPasswordCorrect,
-      parsed_database_name: databaseName
-    });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
 
 
 // ======================
