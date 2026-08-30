@@ -321,6 +321,45 @@ app.post("/login", async (req, res) => {
   }
 });
 
+// ======================
+// DATABASE DEBUG (TEMPORARY)
+// ======================
+app.get("/debug-db", async (req, res) => {
+  try {
+    const isConnected = mongoose.connection && mongoose.connection.readyState === 1;
+    let username = "not set";
+    let password = "not set";
+    let databaseName = "not set";
+
+    if (process.env.MONGODB_URI) {
+      const cleanedUri = process.env.MONGODB_URI.trim().replace(/(^["']|["']$)/g, "");
+      
+      // Parse username and password (looks between // and @)
+      const credsMatch = cleanedUri.match(/\/\/([^:]+):([^@]+)@/);
+      if (credsMatch) {
+        username = credsMatch[1];
+        password = credsMatch[2];
+      }
+
+      // Parse database name (looks between net/ and ?)
+      const dbMatch = cleanedUri.match(/net\/([^?#]+)/);
+      if (dbMatch) databaseName = dbMatch[1];
+    }
+
+    res.json({
+      mongodb_uri_exists: !!process.env.MONGODB_URI,
+      is_db_connected: isConnected,
+      ready_state: mongoose.connection ? mongoose.connection.readyState : "no connection",
+      connection_error: dbConnectionError,
+      parsed_username: username,
+      parsed_password: password,
+      parsed_database_name: databaseName
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 
 
 
