@@ -173,7 +173,6 @@ async function markAttendance(studentId, status) {
             body: JSON.stringify({ studentId, status })
         });
         const data = await res.json();
-        showMessage(data.message || "Attendance updated");
         loadStudents();
     } catch (error) {
         console.error(error);
