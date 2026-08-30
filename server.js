@@ -52,6 +52,15 @@ if (typeof MONGO_URI === "string") {
   
   // 2. Correct username-as-password typos, e.g. robin2006:robin2006 -> robin2006:2006
   MONGO_URI = MONGO_URI.replace(/\/\/robin2006:robin2006@/, '//robin2006:2006@');
+
+  // 3. Make sure the database name is 'attendance' instead of empty, test, or default
+  if (MONGO_URI.includes(".mongodb.net")) {
+    MONGO_URI = MONGO_URI.replace(/\.mongodb\.net\/?\?/, '.mongodb.net/attendance?');
+    MONGO_URI = MONGO_URI.replace(/\.mongodb\.net\/test\?/, '.mongodb.net/attendance?');
+    if (MONGO_URI.endsWith(".mongodb.net") || MONGO_URI.endsWith(".mongodb.net/")) {
+      MONGO_URI = MONGO_URI.replace(/\.mongodb\.net\/?$/, '.mongodb.net/attendance');
+    }
+  }
 }
 let dbConnectionError = null;
 
