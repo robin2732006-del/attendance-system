@@ -321,6 +321,17 @@ app.post("/login", async (req, res) => {
   }
 });
 
+// ======================
+// DATABASE CONNECTION STATUS (SAFE)
+// ======================
+app.get("/db-status", (req, res) => {
+  res.json({
+    is_connected: mongoose.connection && mongoose.connection.readyState === 1,
+    ready_state: mongoose.connection ? mongoose.connection.readyState : "none",
+    connection_error: dbConnectionError || "none"
+  });
+});
+
 
 
 
