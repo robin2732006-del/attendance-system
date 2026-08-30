@@ -61,9 +61,7 @@ class StudentModel {
       }
     }
 
-    if (process.env.MONGODB_URI) {
-      throw new Error("Database connection is offline. Unable to save student.");
-    }
+
 
     // Local JSON File Database Fallback
     const students = db.readJSON(db.STUDENTS_FILE);
@@ -90,9 +88,7 @@ class StudentModel {
       return studentMongooseModel.find();
     }
 
-    if (process.env.MONGODB_URI) {
-      throw new Error("Database connection is offline. Unable to retrieve students.");
-    }
+
 
     // Fallback: Return a chainable object with sort helper to mimic Mongoose
     const students = db.readJSON(db.STUDENTS_FILE);
@@ -120,9 +116,7 @@ class StudentModel {
       }
     }
 
-    if (process.env.MONGODB_URI) {
-      throw new Error("Database connection is offline. Unable to query student.");
-    }
+
 
     const students = db.readJSON(db.STUDENTS_FILE);
     if (query.rollNo) {
@@ -146,9 +140,7 @@ class StudentModel {
       }
     }
 
-    if (process.env.MONGODB_URI) {
-      throw new Error("Database connection is offline. Unable to delete student.");
-    }
+
 
     let students = db.readJSON(db.STUDENTS_FILE);
     const removed = students.find(s => s._id === id);
@@ -169,9 +161,7 @@ class StudentModel {
       }
     }
 
-    if (process.env.MONGODB_URI) {
-      throw new Error("Database connection is offline. Unable to delete students.");
-    }
+
 
     db.writeJSON(db.STUDENTS_FILE, []);
     return { deletedCount: 0 };

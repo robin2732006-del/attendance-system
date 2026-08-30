@@ -47,9 +47,7 @@ class UserModel {
       }
     }
 
-    if (process.env.MONGODB_URI) {
-      throw new Error("Database connection is offline. Unable to save user.");
-    }
+
 
     const users = db.readJSON(USERS_FILE);
     const existingIdx = users.findIndex(u => u.username === this.username);
@@ -87,9 +85,7 @@ class UserModel {
       }
     }
 
-    if (process.env.MONGODB_URI) {
-      throw new Error("Database connection is offline. Unable to query user.");
-    }
+
 
     // 2. Seed default user on-demand in local JSON file database
     const users = db.readJSON(USERS_FILE);

@@ -49,9 +49,7 @@ class AttendanceModel {
       }
     }
 
-    if (process.env.MONGODB_URI) {
-      throw new Error("Database connection is offline. Unable to save attendance.");
-    }
+
 
     // JSON fallback
     const records = db.readJSON(db.ATTENDANCE_FILE);
@@ -90,9 +88,7 @@ class AttendanceModel {
       return attendanceMongooseModel.find(dbQuery);
     }
 
-    if (process.env.MONGODB_URI) {
-      throw new Error("Database connection is offline. Unable to retrieve attendance records.");
-    }
+
 
     // JSON fallback
     let records = db.readJSON(db.ATTENDANCE_FILE);
@@ -159,9 +155,7 @@ class AttendanceModel {
       }
     }
 
-    if (process.env.MONGODB_URI) {
-      throw new Error("Database connection is offline. Unable to query attendance record.");
-    }
+
 
     // JSON fallback
     let records = db.readJSON(db.ATTENDANCE_FILE);
@@ -201,9 +195,7 @@ class AttendanceModel {
       }
     }
 
-    if (process.env.MONGODB_URI) {
-      throw new Error("Database connection is offline. Unable to delete attendance records.");
-    }
+
 
     // JSON fallback
     let records = db.readJSON(db.ATTENDANCE_FILE);
@@ -227,9 +219,7 @@ class AttendanceModel {
       }
     }
 
-    if (process.env.MONGODB_URI) {
-      throw new Error("Database connection is offline. Unable to delete attendance record.");
-    }
+
 
     // JSON fallback
     let records = db.readJSON(db.ATTENDANCE_FILE);
