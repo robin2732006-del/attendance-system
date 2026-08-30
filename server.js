@@ -338,12 +338,24 @@ app.get("/debug-db", async (req, res) => {
       console.error(e);
     }
 
+    let maskedUri = "not set";
+    let hasPlaceholder = false;
+    if (process.env.MONGODB_URI) {
+      // Replace password with asterisks
+      maskedUri = process.env.MONGODB_URI.replace(/(:)([^@]+)(@)/, '$1******$3');
+      hasPlaceholder = process.env.MONGODB_URI.includes("<password>") || 
+                       process.env.MONGODB_URI.includes("<db_password>") ||
+                       process.env.MONGODB_URI.includes("[password]");
+    }
+
     res.json({
       mongodb_uri_exists: !!process.env.MONGODB_URI,
       is_db_connected: isConnected,
       ready_state: mongoose.connection ? mongoose.connection.readyState : "no connection",
       admin_user_found: adminFound,
-      connection_error: dbConnectionError
+      connection_error: dbConnectionError,
+      masked_uri: maskedUri,
+      has_literal_password_placeholder: hasPlaceholder
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
